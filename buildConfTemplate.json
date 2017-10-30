@@ -2,9 +2,9 @@
     {
     "TaskName" : "",
     "TaskDescr" : "",
-    "BeforeBuild" : [""],
+    "Build" : [""],
     "AfterBuild" : [""],
-    "WatchPaths" : [""],
+    "WatchPath" : [""],
     "RunCommand" : ""
   }
   ]
