@@ -28,6 +28,17 @@ func main() {
 	tasks := ParseConfig()
 	var runningTaskIndex int
 
+	if len(os.Args) == 1 || os.Args[1] == "list" {
+		fmt.Println()
+		for _, task := range tasks {
+			fmt.Println(task.TaskName)
+			fmt.Println()
+			fmt.Println(task.TaskDescr)
+			fmt.Println("----------------------------------------------")
+		}
+		os.Exit(0)
+	}
+
 	for index, task := range tasks {
 		if task.TaskName == os.Args[1] {
 			runningTaskIndex = index
