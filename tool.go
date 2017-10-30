@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"os"
+)
+
 func main() {
 	/*proc := Proc{}
 	fmt.Println("Executing")
@@ -19,4 +24,54 @@ func main() {
 			os.Exit(0)
 		}
 	}*/
+
+	tasks := ParseConfig()
+	var runningTaskIndex int
+
+	for index, task := range tasks {
+		if task.TaskName == os.Args[1] {
+			runningTaskIndex = index
+		}
+
+	}
+
+	runningTask := tasks[runningTaskIndex]
+
+	if len(os.Args) > 2 && os.Args[2] == "help" {
+		fmt.Println()
+		fmt.Println("TASK: " + runningTask.TaskName)
+		fmt.Println()
+		fmt.Println(runningTask.TaskDescr)
+		fmt.Println()
+		fmt.Print("Build: ")
+		fmt.Println(runningTask.Build)
+		fmt.Println()
+		fmt.Print("After build: ")
+		fmt.Println(runningTask.AfterBuild)
+		fmt.Println()
+		fmt.Print("Path watch: ")
+		fmt.Println(runningTask.WatchPath)
+		fmt.Println()
+		fmt.Print("Run command: ")
+		fmt.Println(runningTask.RunCommand)
+		os.Exit(0)
+	}
+
+	for {
+		fmt.Println("Running build commands...")
+		OneRunMany(runningTask.Build...)
+		fmt.Println("Done!")
+
+		fmt.Println("Running AfterBuild commands...")
+		OneRunMany(runningTask.AfterBuild...)
+		fmt.Println("Done!")
+
+		if runningTask.WatchPath != "" {
+			fmt.Println("Watching path...")
+		} else {
+			fmt.Println("Nothing to watch! Exiting...")
+			os.Exit(0)
+		}
+
+	}
 }
