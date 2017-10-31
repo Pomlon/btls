@@ -62,23 +62,60 @@ func main() {
 		fmt.Println()
 		fmt.Print("Path watch: ")
 		fmt.Println(runningTask.WatchPath)
+		fmt.Print("Path ignore: ")
+		fmt.Println(runningTask.IgnorePaths)
 		fmt.Println()
 		fmt.Print("Run command: ")
 		fmt.Println(runningTask.RunCommand)
 		os.Exit(0)
 	}
 
+	var w WatchPath
+	if runningTask.WatchPath != "" {
+		w = NewPath(runningTask.WatchPath, runningTask.IgnorePaths...)
+		w.Start()
+	}
+
+	runpath, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error determining workdir!")
+		panic(err)
+	}
+
+	var prc Proc
+
 	for {
 		fmt.Println("Running build commands...")
 		OneRunMany(runningTask.Build...)
 		fmt.Println("Done!")
 
-		fmt.Println("Running AfterBuild commands...")
-		OneRunMany(runningTask.AfterBuild...)
-		fmt.Println("Done!")
+		if len(runningTask.AfterBuild) > 0 {
+			fmt.Println("Running AfterBuild commands...")
+			OneRunMany(runningTask.AfterBuild...)
+			fmt.Println("Done!")
+		}
+
+		if runningTask.RunCommand != "" {
+			fmt.Println("Running process")
+			prc = Proc{}
+			prc.ExecCommand(runningTask.RunCommand)
+		}
 
 		if runningTask.WatchPath != "" {
 			fmt.Println("Watching path...")
+			for {
+				event := <-w.Watcher.Event
+				if event.Path == runpath {
+					fmt.Println("Ignore event!")
+				} else {
+					if runningTask.RunCommand != "" {
+						fmt.Println("Murdering process")
+						prc.Murder()
+					}
+					break
+				}
+
+			}
 		} else {
 			fmt.Println("Nothing to watch! Exiting...")
 			os.Exit(0)
