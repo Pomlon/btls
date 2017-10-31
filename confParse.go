@@ -7,12 +7,13 @@ import (
 
 //TaskDefinitions thanks https://mholt.github.io/json-to-go/ !!
 type TaskDefinitions []struct {
-	TaskName   string   `json:"TaskName"`
-	TaskDescr  string   `json:"TaskDescr"`
-	Build      []string `json:"Build"`
-	AfterBuild []string `json:"AfterBuild"`
-	WatchPath  string   `json:"WatchPath"`
-	RunCommand string   `json:"RunCommand"`
+	TaskName    string   `json:"TaskName"`
+	TaskDescr   string   `json:"TaskDescr"`
+	Build       []string `json:"Build"`
+	AfterBuild  []string `json:"AfterBuild"`
+	WatchPath   string   `json:"WatchPath"`
+	IgnorePaths []string `json:"IgnorePaths"`
+	RunCommand  string   `json:"RunCommand"`
 }
 
 //ParseConfig parses task configs from buildConfig.json

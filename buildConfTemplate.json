@@ -5,6 +5,7 @@
     "Build" : [""],
     "AfterBuild" : [""],
     "WatchPath" : [""],
+    "IgnorePaths" : [""],
     "RunCommand" : ""
   }
   ]
