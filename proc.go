@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type Proc struct {
@@ -19,28 +20,38 @@ func (p *Proc) ExecCommand(command string) {
 func (p *Proc) Command(command string, cha <-chan string) {
 	cmd := exec.Command(command)
 
-	stdout, _ := cmd.StdoutPipe()
+	err := cmd.Start()
+	if err != nil {
+		panic(err)
+	}
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer stdout.Close()
-	cmd.Start()
+
+	time.Sleep(time.Millisecond * 1000)
 	p.Running = true
 	for p.Running == true {
-		fmt.Println("SELECTIN")
+		//fmt.Println("SELECTIN")
 		select {
 		case msgIn := <-cha:
 			if msgIn == "kill" {
+				stdout.Close()
 				cmd.Process.Kill()
 				p.Running = false
 			}
 
 		default:
-			if cmd.ProcessState.Exited() == false {
-				fmt.Println("Executing default")
-				buf := make([]byte, 2000)
-				stdout.Read(buf)
-				fmt.Println(string(buf))
-			} else {
-				break
+
+			//fmt.Println("Executing default")
+			buf := make([]byte, 2000)
+			n, _ := stdout.Read(buf)
+			if str := string(buf); n > 0 {
+				fmt.Println(str)
 			}
+
 		}
 	}
 }
