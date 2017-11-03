@@ -39,6 +39,7 @@ func OneRun(command string) {
 
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println(string(out))
 		return
 	}
 
